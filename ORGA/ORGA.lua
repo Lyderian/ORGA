@@ -75,7 +75,7 @@ ORGA:SetScript("OnEvent", function(self, event, ...)
             
             -- Check if player is in guild and can invite
             if ORGA_PlayerInGuild and CanGuildInvite() then
-                print("|cff9966CC[ORGA]|r Received invite request from " .. sender .. ", sending guild invite...")
+                print("|cFFFFFFFF[ORGA]|r Received invite request from " .. sender .. ", sending guild invite...")
                 GuildInvite(sender)
                 SendChatMessage("I've sent you a guild invite. Welcome to OnlyRejects!", "WHISPER", nil, sender)
             end
@@ -178,12 +178,12 @@ ORGA_Tabs = {}
 
 -- Function for other addons to register tabs
 function ORGA_RegisterTab(name, onSelect)
-    print("|cff9966CC[ORGA]|r Registering tab: " .. name)
+    print("|cFFFFFFFF[ORGA]|r Registering tab: " .. name)
     
     -- Check if a tab with this name already exists to prevent duplicates
     for i, tab in ipairs(ORGA_Tabs) do
         if tab.name == name then
-            print("|cff9966CC[ORGA]|r Skipping duplicate tab: " .. name)
+            print("|cFFFFFFFF[ORGA]|r Skipping duplicate tab: " .. name)
             return
         end
     end
@@ -217,7 +217,7 @@ local function InitializeTabs()
         tabButton:SetPoint("TOPLEFT", ORGA, "TOPLEFT", startX + (i - 1) * (buttonWidth + 5), -40)
         tabButton:SetText(tabData.name)
         tabButton:SetNormalFontObject("GameFontHighlight")
-        tabButton:GetFontString():SetTextColor(0.7, 0.3, 1)
+        tabButton:GetFontString():SetTextColor(1, 1, 1)
         
         -- Automatically adjust text size to fit the button
         local fontName, fontHeight, fontFlags = tabButton:GetFontString():GetFont()
@@ -325,7 +325,7 @@ local function CreateGuestTab()
         whoButton:SetScript("OnClick", function()
             -- Use a simpler slash command format without g: prefix that might cause issues
             SlashCmdList["WHO"]("OnlyRejects")
-            print("|cff9966CC[ORGA]|r Searching for OnlyRejects guild members...")
+            print("|cFFFFFFFF[ORGA]|r Searching for OnlyRejects guild members...")
             
             -- Set flag that a search has been performed
             ORGA_HasSearchedForMembers = true
@@ -353,7 +353,7 @@ local function CreateGuestTab()
             end
             
             -- For debugging
-            print("|cff9966CC[ORGA]|r Updating member list, members found: " .. (ORGA_GuildMembers and tcount(ORGA_GuildMembers) or 0))
+            print("|cFFFFFFFF[ORGA]|r Updating member list, members found: " .. (ORGA_GuildMembers and tcount(ORGA_GuildMembers) or 0))
             
             -- Sort members alphabetically
             local sortedMembers = {}
@@ -436,12 +436,12 @@ local function CreateGuestTab()
                     for i = 1, numWhos do
                         local info = C_FriendList.GetWhoInfo(i)
                         -- Debug WHO results
-                        print("|cff9966CC[ORGA]|r WHO result: " .. info.fullName .. " - Guild: " .. (info.fullGuildName or "None"))
+                        print("|cFFFFFFFF[ORGA]|r WHO result: " .. info.fullName .. " - Guild: " .. (info.fullGuildName or "None"))
                         
                         -- Check for guild match
                         if info and info.fullGuildName and 
                            string.find(info.fullGuildName, "OnlyRejects") then
-                            print("|cff9966CC[ORGA]|r Found guild member: " .. info.fullName)
+                            print("|cFFFFFFFF[ORGA]|r Found guild member: " .. info.fullName)
                             ORGA_GuildMembers[info.fullName] = {
                                 class = info.filename, -- Normalized class name for coloring
                                 level = info.level
@@ -454,11 +454,11 @@ local function CreateGuestTab()
                     for i = 1, numWhos do
                         local name, guild, level, race, class = GetWhoInfo(i)
                         -- Debug WHO results
-                        print("|cff9966CC[ORGA]|r WHO result: " .. name .. " - Guild: " .. (guild or "None"))
+                        print("|cFFFFFFFF[ORGA]|r WHO result: " .. name .. " - Guild: " .. (guild or "None"))
                         
                         -- Check for guild match
                         if guild and string.find(guild, "OnlyRejects") then
-                            print("|cff9966CC[ORGA]|r Found guild member: " .. name)
+                            print("|cFFFFFFFF[ORGA]|r Found guild member: " .. name)
                             ORGA_GuildMembers[name] = {
                                 class = string.upper(class), -- Normalize the class name
                                 level = level
@@ -619,10 +619,10 @@ local function CreateDebugPanel()
     
     -- Set up refresh button
     refreshButton:SetScript("OnClick", function()
-        print("|cff9966CC[ORGA]|r Manually reinitializing addon...")
+        print("|cFFFFFFFF[ORGA]|r Manually reinitializing addon...")
         -- Force reinitialize modules
         for _, m in ipairs({"ORGA_DeathLog", "ORGA_Events", "ORGA_ORGS", "ORGA_REJECTS"}) do
-            print("|cff9966CC[ORGA]|r Re-calling module registration for " .. m)
+            print("|cFFFFFFFF[ORGA]|r Re-calling module registration for " .. m)
             -- Signal modules to try registering again
             _G[m .. "_TryRegister"] = true
         end
@@ -659,20 +659,20 @@ local function InitializeAddon()
     
     if ORGA_PlayerInGuild then
         -- Player is in guild, initialize normal tabs
-        print("|cff9966CC[ORGA]|r Guild member detected. Loading full addon functionality.")
+        print("|cFFFFFFFF[ORGA]|r Guild member detected. Loading full addon functionality.")
         InitializeTabs()
     else
         -- Player is not in guild, create guest UI
-        print("|cff9966CC[ORGA]|r Not in Only Rejects guild. Loading limited functionality.")
+        print("|cFFFFFFFF[ORGA]|r Not in Only Rejects guild. Loading limited functionality.")
         CreateGuestTab()
     end
     
     -- Check for module loading (after some delay to allow for module registration)
     C_Timer.After(3, function()
-        print("|cff9966CC[ORGA]|r Checking final module status:")
-        print("|cff9966CC[ORGA]|r Tabs loaded: " .. #ORGA_Tabs)
+        print("|cFFFFFFFF[ORGA]|r Checking final module status:")
+        print("|cFFFFFFFF[ORGA]|r Tabs loaded: " .. #ORGA_Tabs)
         for i, tab in ipairs(ORGA_Tabs) do
-            print("|cff9966CC[ORGA]|r   - " .. tab.name)
+            print("|cFFFFFFFF[ORGA]|r   - " .. tab.name)
         end
         
         -- Re-run InitializeTabs to make sure all registered tabs are displayed
@@ -703,7 +703,7 @@ eventFrame:SetScript("OnEvent", function(self, event)
             local guildName = GetGuildInfo("player")
             if guildName or attempts >= maxAttempts then
                 -- Either we have guild info, or we've tried enough times
-                print("|cff9966CC[ORGA]|r Guild info check attempt " .. attempts .. ": " .. (guildName or "not available"))
+                print("|cFFFFFFFF[ORGA]|r Guild info check attempt " .. attempts .. ": " .. (guildName or "not available"))
                 InitializeAddon()
             else
                 -- Try again with increasing delay
@@ -722,11 +722,11 @@ eventFrame:SetScript("OnEvent", function(self, event)
         if wasInGuild ~= ORGA_PlayerInGuild then
             -- Reload UI with appropriate tabs
             if ORGA_PlayerInGuild then
-                print("|cff9966CC[ORGA]|r You are now in the Only Rejects guild. Addon functionality enabled.")
+                print("|cFFFFFFFF[ORGA]|r You are now in the Only Rejects guild. Addon functionality enabled.")
                 ORGA_Tabs = {}
                 C_Timer.After(0.5, InitializeTabs)
             else
-                print("|cff9966CC[ORGA]|r You are no longer in the Only Rejects guild. Limited functionality available.")
+                print("|cFFFFFFFF[ORGA]|r You are no longer in the Only Rejects guild. Limited functionality available.")
                 C_Timer.After(0.5, CreateGuestTab)
             end
         end
@@ -814,7 +814,7 @@ function MinimapButton:Initialize()
     overlay:SetHeight(13)
     overlay:SetPoint("CENTER", 0, 0)
     overlay:SetTexture("Interface\\GuildFrame\\GuildLogo-NoLogo")
-    overlay:SetVertexColor(0.8, 0.4, 1)
+    overlay:SetVertexColor(1, 1, 1)
     
     -- Add a border texture
     local border = button:CreateTexture(nil, "OVERLAY")
@@ -874,15 +874,15 @@ SlashCmdList["ORGABUTTON"] = function(msg)
     if msg == "hide" then
         if MinimapButton.button then
             MinimapButton.button:Hide()
-            print("|cff9966CC[ORGA]|r Minimap button hidden. Type /orgabutton show to restore.")
+            print("|cFFFFFFFF[ORGA]|r Minimap button hidden. Type /orgabutton show to restore.")
         end
     elseif msg == "show" then
         if MinimapButton.button then
             MinimapButton.button:Show()
-            print("|cff9966CC[ORGA]|r Minimap button shown.")
+            print("|cFFFFFFFF[ORGA]|r Minimap button shown.")
         end
     else
-        print("|cff9966CC[ORGA]|r Minimap button commands:")
+        print("|cFFFFFFFF[ORGA]|r Minimap button commands:")
         print("  /orgabutton show - Show minimap button")
         print("  /orgabutton hide - Hide minimap button")
     end
@@ -900,23 +900,23 @@ end
 -- Add help command
 SLASH_ORGAHELP1 = "/orgahelp"
 SlashCmdList["ORGAHELP"] = function()
-    print("|cff9966CC=========== ORGA Commands ===========|r")
-    print("|cff9966CC[ORGA v" .. ORGA_VERSION_STRING .. "]|r")
-    print("|cff9966CC/orga|r - Toggle the main addon window")
-    print("|cff9966CC/orgabutton show|r - Show minimap button")
-    print("|cff9966CC/orgabutton hide|r - Hide minimap button")
-    print("|cff9966CC/orgadebug|r - Show debug information window")
-    print("|cff9966CC/orgaversion|r - Show addon version info")
-    print("|cff9966CC/orgahelp|r - Show this help message")
+    print("|cFFFFFFFF=========== ORGA Commands ===========|r")
+    print("|cFFFFFFFF[ORGA v" .. ORGA_VERSION_STRING .. "]|r")
+    print("|cFFFFFFFF/orga|r - Toggle the main addon window")
+    print("|cFFFFFFFF/orgabutton show|r - Show minimap button")
+    print("|cFFFFFFFF/orgabutton hide|r - Hide minimap button")
+    print("|cFFFFFFFF/orgadebug|r - Show debug information window")
+    print("|cFFFFFFFF/orgaversion|r - Show addon version info")
+    print("|cFFFFFFFF/orgahelp|r - Show this help message")
     if ORGA_PlayerInGuild == true then
-        print("|cff9966CC/orgasave|r - Manually save inventory data (ORGS module)")
-        print("|cff9966CC/orgsverbose|r - Toggle verbose logging (ORGS module)")
+        print("|cFFFFFFFF/orgasave|r - Manually save inventory data (ORGS module)")
+        print("|cFFFFFFFF/orgsverbose|r - Toggle verbose logging (ORGS module)")
     end
-    print("|cff9966CC=======================================|r")
+    print("|cFFFFFFFF=======================================|r")
 end
 
 -- Add version command
 SLASH_ORGAVERSION1 = "/orgaversion"
 SlashCmdList["ORGAVERSION"] = function()
-    print("|cff9966CC[ORGA]|r Version " .. ORGA_VERSION_STRING .. " (build " .. ORGA_VERSION.build .. ")")
+    print("|cFFFFFFFF[ORGA]|r Version " .. ORGA_VERSION_STRING .. " (build " .. ORGA_VERSION.build .. ")")
 end

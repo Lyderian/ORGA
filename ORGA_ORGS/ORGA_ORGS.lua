@@ -16,7 +16,7 @@ ORGS_BankAlts = {
 }
 
 -- Print loaded bank alts for debugging
-print("|cff9966CC[ORGA_ORGS]|r Initializing with bank alts:")
+print("|cFFFFFFFF[ORGA_ORGS]|r Initializing with bank alts:")
 for name, _ in pairs(ORGS_BankAlts) do
     print("   - " .. name)
 end
@@ -40,19 +40,19 @@ end
 local function TryRegisterTabs()
     -- Only register if player is in the guild or guild check isn't implemented yet
     if ORGA_RegisterTab and (ORGA_PlayerInGuild == nil or ORGA_PlayerInGuild == true) then
-        print("|cff9966CC[ORGA_ORGS]|r Attempting to register ORGS tab")
+        print("|cFFFFFFFF[ORGA_ORGS]|r Attempting to register ORGS tab")
         ORGA_RegisterTab("ORGS", ORGS_ShowInventoryUI)
         
         -- Add a way for bank alts to view requests
         local playerName = UnitName("player")
         if ORGS_BankAlts and ORGS_BankAlts[playerName] then
-            print("|cff9966CC[ORGA_ORGS]|r Attempting to register ORGS Requests tab for bank alt: " .. playerName)
+            print("|cFFFFFFFF[ORGA_ORGS]|r Attempting to register ORGS Requests tab for bank alt: " .. playerName)
             ORGA_RegisterTab("ORGS Requests", ORGS_ShowRequestsUI)
         end
         
         _G.ORGA_ORGS_Loaded = "Loaded"
     else
-        print("|cff9966CC[ORGA_ORGS]|r Not registering tabs - player not in guild or ORGA not loaded")
+        print("|cFFFFFFFF[ORGA_ORGS]|r Not registering tabs - player not in guild or ORGA not loaded")
         _G.ORGA_ORGS_Loaded = "Loaded but not registered (not in guild)"
     end
 end
@@ -69,7 +69,7 @@ end
 -- Create a timer to check for reinitialization requests
 C_Timer.NewTicker(1, function()
     if _G.ORGA_ORGS_TryRegister then
-        print("|cff9966CC[ORGA_ORGS]|r Received reinitialization request")
+        print("|cFFFFFFFF[ORGA_ORGS]|r Received reinitialization request")
         _G.ORGA_ORGS_TryRegister = nil
         TryRegisterTabs()
     end
