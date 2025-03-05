@@ -7,7 +7,7 @@
 ## SavedVariables: ORGA_Data, ORGA_WindowSettings
 ## X-Category: Guild
 ## X-Website: https://github.com/Lyderian/ORGA
-## X-Curse-Project-ID: YOUR_PROJECT_ID
+## X-Curse-Project-ID: 1213586
 ## X-WoWI-ID: YOUR_WOWI_ID
 
 ORGA.lua
