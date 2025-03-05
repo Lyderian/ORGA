@@ -1,17 +1,17 @@
-package-as: ORGA
-enable-nolib-creation: no
+# This configuration packages all add-ons in their separate directories
+# No package-as is specified because we want to keep all add-ons separate
+# The packager will automatically include all directories with .toc files
 
-move-folders:
-    ORGA: ORGA
-    ORGA_Deathlog: ORGA_Deathlog
-    ORGA_Events: ORGA_Events
-    ORGA_ORGS: ORGA_ORGS
-    ORGA_REJECTS: ORGA_REJECTS
+externals:
 
 ignore:
-    - README.md
-    - CLAUDE.md
-    - update_addon.sh
-    - .DS_Store
-    - .git
-    - .github
+  - README.md
+  - CLAUDE.md
+  - update_addon.sh
+  - .DS_Store
+  - .git
+  - .github
+  - .gitattributes
+  - .gitignore
+  - PR_DESCRIPTION.md
+  - .release
