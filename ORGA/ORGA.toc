@@ -1,0 +1,9 @@
+## Interface: 11505
+## Title: Only Rejects Guild Addon
+## Author: Lyderian
+## Version: 1.0.1
+## Notes: Guild Management and Organization for Only Rejects
+## Dependencies:
+## SavedVariables: ORGA_Data, ORGA_WindowSettings
+
+ORGA.lua

@@ -1,0 +1,8 @@
+## Interface: 11505
+## Title: ORGA - ORGS Tab
+## Dependencies: ORGA
+## SavedVariables: ORGA_Data, ORGS_Inventory, ORGS_RequestedItems, ORGS_Settings
+ORGA_ORGS.lua
+ORGA_ORGS_Inventory.lua
+ORGA_ORGS_Cart.lua
+ORGA_ORGS_UI.lua

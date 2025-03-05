@@ -1,0 +1,4 @@
+## Interface: 11505
+## Title: ORGA - Death Log
+## Dependencies: ORGA
+ORGA_DeathLog.lua
