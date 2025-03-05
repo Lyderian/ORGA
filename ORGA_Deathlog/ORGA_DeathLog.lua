@@ -8,11 +8,11 @@ end
 local function TryRegisterTab()
     -- Only register the tab if player is in the guild
     if ORGA_RegisterTab and (ORGA_PlayerInGuild == nil or ORGA_PlayerInGuild == true) then
-        print("|cff9966CC[ORGA_DeathLog]|r Attempting to register tab")
+        print("|cFFFFFFFF[ORGA_DeathLog]|r Attempting to register tab")
         ORGA_RegisterTab("Guild Death Log", ShowDeathLog)
         _G.ORGA_DeathLog_Loaded = "Loaded"
     else
-        print("|cff9966CC[ORGA_DeathLog]|r Not registering tab - player not in guild or ORGA not loaded")
+        print("|cFFFFFFFF[ORGA_DeathLog]|r Not registering tab - player not in guild or ORGA not loaded")
         _G.ORGA_DeathLog_Loaded = "Loaded but not registered (not in guild)"
     end
 end
@@ -23,7 +23,7 @@ deathlogFrame:RegisterEvent("ADDON_LOADED")
 deathlogFrame:RegisterEvent("PLAYER_LOGIN")
 deathlogFrame:SetScript("OnEvent", function(self, event, addonName)
     if event == "ADDON_LOADED" and addonName == "ORGA_DeathLog" then
-        print("|cff9966CC[ORGA_DeathLog]|r Module loaded")
+        print("|cFFFFFFFF[ORGA_DeathLog]|r Module loaded")
         _G.ORGA_DeathLog_Loaded = "Loading"
         
         -- Try and register shortly after loading
@@ -43,7 +43,7 @@ end)
 -- Create a timer to check for reinitialization requests
 C_Timer.NewTicker(1, function()
     if _G.ORGA_DeathLog_TryRegister then
-        print("|cff9966CC[ORGA_DeathLog]|r Received reinitialization request")
+        print("|cFFFFFFFF[ORGA_DeathLog]|r Received reinitialization request")
         _G.ORGA_DeathLog_TryRegister = nil
         TryRegisterTab()
     end

@@ -28,3 +28,6 @@ Interface/
 
 # Claude assistant files
 CLAUDE.md
+
+# Local scripts
+update_addon.sh
