@@ -5,5 +5,9 @@
 ## Notes: Guild Management and Organization for Only Rejects
 ## Dependencies:
 ## SavedVariables: ORGA_Data, ORGA_WindowSettings
+## X-Category: Guild
+## X-Website: https://github.com/Lyderian/ORGA
+## X-Curse-Project-ID: YOUR_PROJECT_ID
+## X-WoWI-ID: YOUR_WOWI_ID
 
 ORGA.lua
