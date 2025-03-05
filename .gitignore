@@ -1,0 +1,27 @@
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary Files
+*.swp
+*~
+*.tmp
+*.bak
+
+# IDE/Editor Files
+.idea/
+.vscode/
+*.sublime-*
+
+# Build output
+.release/
+
+# WoW Specific
+WTF/
+Interface/
+*.build
+*.log
+
+# Curse/BigWigs packager
+.release/

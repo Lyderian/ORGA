@@ -1,4 +1,8 @@
 ## Interface: 11505
 ## Title: ORGA - Death Log
+## Author: Lyderian
+## Version: 1.0.1
+## Notes: Death tracking system for the ORGA Guild Addon
 ## Dependencies: ORGA
+## X-Category: Guild
 ORGA_DeathLog.lua

@@ -1,4 +1,8 @@
 ## Interface: 11505
 ## Title: ORGA - R.E.J.E.C.T.S
+## Author: Lyderian
+## Version: 1.0.1
+## Notes: Additional guild management features for the ORGA Guild Addon
 ## Dependencies: ORGA
+## X-Category: Guild
 ORGA_REJECTS.lua

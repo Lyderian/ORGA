@@ -37,7 +37,14 @@ ORGA consists of several integrated modules:
 
 ## Installation
 
-1. Download the latest release
+### Method 1: CurseForge App (Recommended)
+1. Open the CurseForge App
+2. Search for "ORGA" or "Only Rejects Guild Addon"
+3. Click "Install"
+4. Launch World of Warcraft
+
+### Method 2: Manual Installation
+1. Download the latest release from [CurseForge](https://www.curseforge.com/wow/addons/orga) or [GitHub Releases](https://github.com/Lyderian/ORGA/releases)
 2. Extract the contents to your World of Warcraft `Interface/AddOns` directory
 3. Ensure all folders are correctly named:
    - ORGA
@@ -109,13 +116,32 @@ The addon is organized into several modules:
 - **ORGA_Events**: Event planning and management
 - **ORGA_REJECTS**: Additional guild management features
 
+### Development & Contribution
+
+1. Clone the repository: `git clone https://github.com/Lyderian/ORGA.git`
+2. Make your changes following the existing code style
+3. Test your changes in-game
+4. Submit a pull request with a detailed description of your changes
+
+### Releasing New Versions
+
+This addon uses automated packaging through GitHub Actions and CurseForge:
+
+1. Update version numbers in all TOC files
+2. Tag the release in git: `git tag v1.0.2`
+3. Push the tag to GitHub: `git push origin v1.0.2`
+4. The GitHub Action will automatically:
+   - Package the addon
+   - Create a GitHub Release
+   - Upload to CurseForge
+
 ## Support & Feedback
 
 For support, feedback, or to report bugs, please create an issue in the GitHub repository.
 
 ## License
 
-This addon is designed specifically for the "OnlyRejects" guild and is not licensed for general distribution.
+This addon is designed specifically for the "OnlyRejects" guild and is licensed under [All Rights Reserved] for controlled distribution. While the code is public on GitHub for educational purposes, it is not permitted for redistribution or use by other guilds without explicit permission.
 
 ## Acknowledgements
 
