@@ -1,8 +1,11 @@
-# This configuration packages all add-ons in their separate directories
-# No package-as is specified because we want to keep all add-ons separate
-# The packager will automatically include all directories with .toc files
+package-as: ORGA-Suite
 
-externals:
+move-folders:
+  ORGA: ORGA
+  ORGA_Deathlog: ORGA_Deathlog
+  ORGA_Events: ORGA_Events
+  ORGA_ORGS: ORGA_ORGS
+  ORGA_REJECTS: ORGA_REJECTS
 
 ignore:
   - README.md
