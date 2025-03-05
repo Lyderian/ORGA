@@ -1,8 +1,8 @@
-## Interface: 11501
+## Interface: 11506
 ## Title: ORGA Suite
 ## Notes: OnlyRejects Guild Addon Suite - A collection of addons for the OnlyRejects guild
 ## Author: Lyderian
-## Version: 1.0.7
+## Version: 1.0.9
 ## X-Category: Guild
 ## X-License: MIT
 ## X-Website: https://github.com/Lyderian/ORGA
@@ -13,4 +13,4 @@
 # This is a meta-package that loads all ORGA addons
 # The actual addons are in the subfolders
 
-## X-Packaged-Version: v1.0.7
+## X-Packaged-Version: v1.0.9
