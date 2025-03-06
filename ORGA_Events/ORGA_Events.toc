@@ -1,8 +1,9 @@
-## Interface: 11505
+## Interface: 11506
 ## Title: ORGA - Events
 ## Author: Lyderian
-## Version: 1.0.1
+## Version: 1.0.10
 ## Notes: Event planning and management for the ORGA Guild Addon
 ## Dependencies: ORGA
 ## X-Category: Guild
+## SavedVariables: ORGA_Events_Data
 ORGA_Events.lua

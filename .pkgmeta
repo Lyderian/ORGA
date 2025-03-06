@@ -1,11 +1,11 @@
 package-as: ORGA-Suite
 
 move-folders:
-  ORGA: ORGA
-  ORGA_Deathlog: ORGA_Deathlog
-  ORGA_Events: ORGA_Events
-  ORGA_ORGS: ORGA_ORGS
-  ORGA_REJECTS: ORGA_REJECTS
+  ORGA: ORGA-Suite/ORGA
+  ORGA_Deathlog: ORGA-Suite/ORGA_Deathlog
+  ORGA_Events: ORGA-Suite/ORGA_Events
+  ORGA_ORGS: ORGA-Suite/ORGA_ORGS
+  ORGA_REJECTS: ORGA-Suite/ORGA_REJECTS
 
 ignore:
   - README.md

@@ -1,4 +1,4 @@
-## Interface: 11505
+## Interface: 11506
 ## Title: ORGA - ORGS Tab
 ## Author: Lyderian
 ## Version: 1.0.1

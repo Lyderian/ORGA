@@ -1,0 +1,16 @@
+## Interface: 11506
+## Title: ORGA Suite
+## Notes: OnlyRejects Guild Addon Suite - A collection of addons for the OnlyRejects guild
+## Author: Lyderian
+## Version: 1.0.10
+## X-Category: Guild
+## X-License: MIT
+## X-Website: https://github.com/Lyderian/ORGA
+## X-Curse-Project-ID: 1213586
+## SavedVariables: ORGA_WindowSettings, ORGA_Data, ORGS_Settings, ORGS_Cart, ORGS_RequestedItems, ORGS_BankAlts, ORGA_Events_Data
+## OptionalDeps: Bagnon, Baggins
+
+# This is a meta-package that loads all ORGA addons
+# The actual addons are in the subfolders
+
+## X-Packaged-Version: v1.0.10
