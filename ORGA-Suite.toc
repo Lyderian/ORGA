@@ -13,4 +13,6 @@
 # This is a meta-package that loads all ORGA addons
 # The actual addons are in the subfolders
 
+ORGA-Suite.lua
+
 ## X-Packaged-Version: v1.0.10
