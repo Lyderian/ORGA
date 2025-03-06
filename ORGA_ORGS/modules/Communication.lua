@@ -359,7 +359,7 @@ local function ProcessItemRequest(message, sender)
     
     -- Refresh the requests UI if it's visible
     ORGS_RefreshRequestsUI()
-}
+end
 
 -- Process response to item request as a requester
 local function ProcessItemRequestResponse(message, sender, isApproved)

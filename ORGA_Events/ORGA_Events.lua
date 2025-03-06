@@ -13,6 +13,16 @@ if not ORGA_Events_Data then
     }
 end
 
+-- Utility functions --
+local function Debug(message)
+    if ORGA_Events_Data.debug then
+        -- Only print non-resize related debug messages to avoid spam
+        if not message:find("resize") and not message:find("Resize") then
+            print("|cFFFFFFFF[ORGA_Events]|r " .. message)
+        end
+    end
+end
+
 -- Communication constants
 local COMM_PREFIX = "ORGA_Events"
 local COMM_COMMANDS = {
@@ -76,16 +86,6 @@ local OFFICER_RANK_PATTERNS = {
 -- Add a resize throttling variable to prevent excessive updates
 local resizeThrottleTimers = {}
 local isResizing = false
-
--- Utility functions --
-local function Debug(message)
-    if ORGA_Events_Data.debug then
-        -- Only print non-resize related debug messages to avoid spam
-        if not message:find("resize") and not message:find("Resize") then
-            print("|cFFFFFFFF[ORGA_Events]|r " .. message)
-        end
-    end
-end
 
 -- Function to throttle resize events
 local function ThrottledResize(callback, frameKey, delay)
