@@ -4,13 +4,23 @@
 ORGA is a World of Warcraft Classic addon developed for the "OnlyRejects" guild. It consists of several modules:
 - ORGA (main window) - Core functionality and UI framework
 - ORGA_Deathlog - Death tracking system
-- ORGA_Events - Event planning and management
+- ORGA_Events - Event planning and management with timezone support
 - ORGA_ORGS (guild bank system) - Guild bank inventory management
 - ORGA_REJECTS - Additional guild management features
 
-**Current Version:** 1.0.1
+**Current Version:** 1.0.10
 
 ## Recent Changes
+
+### Events Module Implementation (March 2025)
+- Implemented full event management system with timezone support
+- Added role-based permissions (OnlyOfficer and Warchief ranks can manage events)
+- Created event creation form with date/time picker
+- Implemented countdown timer showing days, hours, minutes until event
+- Added automatic timezone conversion for all guild members
+- Built responsive UI with scrollable event list
+- Implemented edit and delete functionality for event managers
+- Added /orgaevents command to quickly access the Events tab
 
 ### Main ORGA Addon Improvements (March 2025)
 - Added version control system (v1.0.1) for better tracking and updates
@@ -102,6 +112,9 @@ The GitHub Action will automatically:
 - `/orgahelp` - Show full command list
 - `/orgasave` - Manually save inventory data (ORGS module)
 - `/orgsverbose` - Toggle verbose logging (ORGS module)
+- `/orgaevents` - Open the Events tab
+- `/orgaevents debug` - Toggle Events module debug mode and show rank information
+- `/orgaevents forcepermission` - Testing command to override rank permissions
 
 ## Bag Item IDs for Reference
 - Linen Bag: 4238
