@@ -8,9 +8,17 @@ ORGA is a World of Warcraft Classic addon developed for the "OnlyRejects" guild.
 - ORGA_ORGS (guild bank system) - Guild bank inventory management
 - ORGA_REJECTS - Additional guild management features
 
-**Current Version:** 1.0.10
+**Current Version:** 1.0.12
 
 ## Recent Changes
+
+### Cross-Client Communication Implementation (March 2025)
+- Added addon communication system for sharing data between players
+- Implemented event synchronization for the Events module
+- Added inventory data synchronization for the ORGS module
+- Added item request communication system for cart requests
+- Fixed CurseForge App installation issue with proper ORGA-Suite.lua loader
+- Updated all version numbers to 1.0.12
 
 ### Events Module Implementation (March 2025)
 - Implemented full event management system with timezone support
