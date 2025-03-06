@@ -1,16 +1,70 @@
 -- ORGA_Events Module
--- Version: 1.0.10
+-- Version: 1.0.11
 -- Author: Lyderian
 
 -- Initialize saved variables if not exists
 if not ORGA_Events_Data then
     ORGA_Events_Data = {
         events = {},  -- Table to store events
-        version = "1.0.10", -- Store version in saved variables
+        version = "1.0.11", -- Store version in saved variables
         debug = false,     -- Debug mode
-        forcePermission = false  -- Force permission override for testing
+        forcePermission = false,  -- Force permission override for testing
+        lastSync = 0       -- Timestamp of last sync
     }
 end
+
+-- Communication constants
+local COMM_PREFIX = "ORGA_Events"
+local COMM_COMMANDS = {
+    SYNC_REQUEST = "SYNC_REQ",
+    SYNC_DATA = "SYNC_DATA",
+    EVENT_ADD = "EVENT_ADD",
+    EVENT_EDIT = "EVENT_EDIT",
+    EVENT_DELETE = "EVENT_DELETE"
+}
+
+-- Register addon communication channel
+local function InitializeComm()
+    -- Register our communication prefix
+    if C_ChatInfo and C_ChatInfo.RegisterAddonMessagePrefix then
+        C_ChatInfo.RegisterAddonMessagePrefix(COMM_PREFIX)
+        Debug("Registered addon message prefix: " .. COMM_PREFIX)
+    else
+        print("|cFFFFFFFF[ORGA_Events]|r ERROR: Could not register addon message prefix")
+    end
+end
+
+-- Add event handler for addon messages
+local commFrame = CreateFrame("Frame")
+commFrame:RegisterEvent("CHAT_MSG_ADDON")
+commFrame:SetScript("OnEvent", function(self, event, prefix, message, channel, sender)
+    -- Filter out our own messages and validate prefix
+    if prefix ~= COMM_PREFIX or sender == UnitName("player") then 
+        return 
+    end
+    
+    Debug("Received addon message from " .. sender .. " via " .. channel .. ": " .. message)
+    
+    -- Parse the message (format: "COMMAND|DATA")
+    local command, data = strsplit("|", message, 2)
+    
+    if command == COMM_COMMANDS.SYNC_REQUEST then
+        -- Respond to sync request with our current data
+        SendEventsData(channel)
+    elseif command == COMM_COMMANDS.SYNC_DATA then
+        -- Process incoming sync data
+        ProcessIncomingSyncData(data, sender)
+    elseif command == COMM_COMMANDS.EVENT_ADD then
+        -- Process new event
+        ProcessIncomingEventAdd(data, sender)
+    elseif command == COMM_COMMANDS.EVENT_EDIT then
+        -- Process edited event
+        ProcessIncomingEventEdit(data, sender)
+    elseif command == COMM_COMMANDS.EVENT_DELETE then
+        -- Process deleted event
+        ProcessIncomingEventDelete(data, sender)
+    end
+end)
 
 -- List of guild ranks that can manage events
 -- Using partial matching for flexibility with capitalization and spacing
@@ -209,12 +263,17 @@ local function AddEvent(title, description, timestamp, createdBy, timezone)
     Debug("Added new event: " .. title)
     Debug("Total events after add: " .. #ORGA_Events_Data.events)
     
+    -- Broadcast the new event to all guild members
+    BroadcastNewEvent(event)
+    
     return id
 end
 
 -- Edit an existing event
 local function EditEvent(id, title, description, timestamp, timezone)
     local eventFound = false
+    local updatedEvent = nil
+    
     for i, event in ipairs(ORGA_Events_Data.events) do
         if event.id == id then
             event.title = title
@@ -223,6 +282,7 @@ local function EditEvent(id, title, description, timestamp, timezone)
             event.timezone = timezone or event.timezone or "UTC"
             event.lastEdited = time()
             eventFound = true
+            updatedEvent = event
             Debug("Edited event: " .. title)
             Debug("Event data after edit - Timestamp: " .. timestamp .. ", Time: " .. FormatLocalTime(timestamp))
             break
@@ -233,6 +293,12 @@ local function EditEvent(id, title, description, timestamp, timezone)
     if eventFound then
         SortEvents()
         Debug("Total events after edit: " .. #ORGA_Events_Data.events)
+        
+        -- Broadcast the edited event
+        if updatedEvent then
+            BroadcastEditedEvent(updatedEvent)
+        end
+        
         return true
     end
     
@@ -243,10 +309,13 @@ end
 local function DeleteEvent(id)
     local eventFound = false
     local eventTitle = ""
+    local deletedEvent = nil
     
     for i, event in ipairs(ORGA_Events_Data.events) do
         if event.id == id then
             eventTitle = event.title
+            -- Save a copy of the event for broadcasting
+            deletedEvent = CopyTable(event)
             table.remove(ORGA_Events_Data.events, i)
             eventFound = true
             Debug("Deleted event: " .. eventTitle)
@@ -256,10 +325,32 @@ local function DeleteEvent(id)
     
     if eventFound then
         Debug("Total events after delete: " .. #ORGA_Events_Data.events)
+        
+        -- Broadcast the deleted event
+        if deletedEvent then
+            BroadcastDeletedEvent(deletedEvent)
+        end
+        
         return true
     end
     
     return false
+end
+
+-- Helper function to deep copy a table
+local function CopyTable(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[CopyTable(orig_key)] = CopyTable(orig_value)
+        end
+        setmetatable(copy, CopyTable(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
 end
 
 -- Sort events by timestamp - make this global by removing 'local'
@@ -1123,6 +1214,319 @@ SlashCmdList["ORGAEVENTS"] = function(msg)
     end
 end
 
+-- Serialization helper functions
+local function SerializeEvent(event)
+    -- Create a simplified version for network transmission (fields separated by tildes)
+    local serialized = table.concat({
+        event.id or "",
+        event.title or "",
+        event.description or "",
+        tostring(event.timestamp or 0),
+        event.timezone or "UTC",
+        event.createdBy or "",
+        tostring(event.created or 0),
+        tostring(event.lastEdited or 0)
+    }, "~")
+    
+    return serialized
+end
+
+local function DeserializeEvent(serialized)
+    -- Extract all fields from the serialized string
+    local id, title, description, timestamp, timezone, createdBy, created, lastEdited = strsplit("~", serialized, 8)
+    
+    -- Convert numeric fields from strings back to numbers
+    timestamp = tonumber(timestamp) or 0
+    created = tonumber(created) or 0
+    lastEdited = tonumber(lastEdited) or 0
+    
+    -- Create and return event table
+    return {
+        id = id,
+        title = title,
+        description = description,
+        timestamp = timestamp,
+        timezone = timezone,
+        createdBy = createdBy,
+        created = created,
+        lastEdited = lastEdited
+    }
+end
+
+-- Send functions
+local function SendEventData(command, event, channel)
+    channel = channel or "GUILD"
+    
+    -- Skip if not in guild and trying to send to guild
+    if channel == "GUILD" and not IsInGuild() then
+        Debug("Not sending event - not in a guild")
+        return
+    end
+    
+    -- Serialize the event data
+    local serialized = SerializeEvent(event)
+    local message = command .. "|" .. serialized
+    
+    -- Keep message under the addon message limit (255 bytes)
+    if #message > 255 then
+        -- Truncate description if needed to fit within limit
+        local truncatedDesc = string.sub(event.description or "", 1, 100) .. "..."
+        event.description = truncatedDesc
+        serialized = SerializeEvent(event)
+        message = command .. "|" .. serialized
+        
+        -- Check again after truncation
+        if #message > 255 then
+            Debug("Failed to send event data - message too long even after truncation")
+            return
+        end
+    end
+    
+    -- Send the message
+    if C_ChatInfo then
+        C_ChatInfo.SendAddonMessage(COMM_PREFIX, message, channel)
+        Debug("Sent " .. command .. " for event " .. event.id .. " via " .. channel)
+    end
+end
+
+-- Function to broadcast a newly created event
+local function BroadcastNewEvent(event)
+    SendEventData(COMM_COMMANDS.EVENT_ADD, event)
+end
+
+-- Function to broadcast an edited event
+local function BroadcastEditedEvent(event)
+    SendEventData(COMM_COMMANDS.EVENT_EDIT, event)
+end
+
+-- Function to broadcast a deleted event
+local function BroadcastDeletedEvent(event)
+    SendEventData(COMM_COMMANDS.EVENT_DELETE, event)
+end
+
+-- Function to request sync from guild
+local function RequestEventsSync()
+    if not IsInGuild() then
+        Debug("Not requesting sync - not in a guild")
+        return
+    end
+    
+    -- Send sync request to guild
+    if C_ChatInfo then
+        C_ChatInfo.SendAddonMessage(COMM_PREFIX, COMM_COMMANDS.SYNC_REQUEST, "GUILD")
+        Debug("Sent sync request to guild")
+    end
+end
+
+-- Function to send all events data
+local function SendEventsData(channel)
+    channel = channel or "GUILD"
+    
+    -- Skip if not in guild and trying to send to guild
+    if channel == "GUILD" and not IsInGuild() then
+        Debug("Not sending events data - not in a guild")
+        return
+    end
+    
+    -- Pack all events into a compact format
+    local dataPackets = {}
+    local currentPacket = ""
+    
+    -- Record sync time
+    ORGA_Events_Data.lastSync = time()
+    
+    -- Add header with count and timestamp
+    local header = COMM_COMMANDS.SYNC_DATA .. "|" .. #ORGA_Events_Data.events .. ":" .. ORGA_Events_Data.lastSync
+    table.insert(dataPackets, header)
+    
+    -- Add each event as a separate message (to stay under size limits)
+    for _, event in ipairs(ORGA_Events_Data.events) do
+        SendEventData(COMM_COMMANDS.SYNC_DATA, event, channel)
+    end
+    
+    Debug("Sent events data to " .. channel .. " (" .. #ORGA_Events_Data.events .. " events)")
+end
+
+-- Process incoming messages
+local function ProcessIncomingSyncData(data, sender)
+    -- Check if this is a header packet
+    if string.find(data, "^%d+:%d+$") then
+        -- Extract event count and timestamp
+        local count, timestamp = strsplit(":", data)
+        count = tonumber(count) or 0
+        timestamp = tonumber(timestamp) or 0
+        
+        -- If sender's data is older than ours, ignore it
+        if timestamp < ORGA_Events_Data.lastSync then
+            Debug("Ignoring older sync data from " .. sender)
+            return
+        end
+        
+        Debug("Processing sync data from " .. sender .. " with " .. count .. " events")
+        return
+    end
+    
+    -- Otherwise, this is an event packet
+    local event = DeserializeEvent(data)
+    
+    -- Validate event
+    if not event or not event.id or not event.timestamp then
+        Debug("Received invalid event data from " .. sender)
+        return
+    end
+    
+    -- Look for existing event with same ID
+    local found = false
+    for i, existingEvent in ipairs(ORGA_Events_Data.events) do
+        if existingEvent.id == event.id then
+            -- Use the newer version based on lastEdited timestamp
+            if not existingEvent.lastEdited or (event.lastEdited and event.lastEdited > existingEvent.lastEdited) then
+                ORGA_Events_Data.events[i] = event
+                Debug("Updated existing event: " .. event.title)
+            end
+            found = true
+            break
+        end
+    end
+    
+    -- If not found, add the new event
+    if not found then
+        table.insert(ORGA_Events_Data.events, event)
+        Debug("Added new event from sync: " .. event.title)
+    end
+    
+    -- Sort events after processing sync data
+    SortEvents()
+    
+    -- If the events list is visible, refresh it
+    if _G.ORGA_EventsScrollFrame and _G.ORGA_EventsScrollFrame:IsVisible() then
+        -- Get the parent frame (tab content)
+        local parentFrame = _G.ORGA_EventsScrollFrame:GetParent()
+        if parentFrame then
+            Debug("Refreshing events list after sync")
+            CreateEventsListView(parentFrame)
+        end
+    end
+end
+
+local function ProcessIncomingEventAdd(data, sender)
+    local event = DeserializeEvent(data)
+    
+    -- Validate event
+    if not event or not event.id or not event.timestamp then
+        Debug("Received invalid event data for add from " .. sender)
+        return
+    end
+    
+    -- Check if we already have this event
+    for _, existingEvent in ipairs(ORGA_Events_Data.events) do
+        if existingEvent.id == event.id then
+            Debug("Event already exists, ignoring add: " .. event.id)
+            return
+        end
+    end
+    
+    -- Add the new event
+    table.insert(ORGA_Events_Data.events, event)
+    Debug("Added new event from " .. sender .. ": " .. event.title)
+    
+    -- Sort events after adding new one
+    SortEvents()
+    
+    -- Show notification to user
+    print("|cFFFFFFFF[ORGA_Events]|r New event added: " .. event.title .. " on " .. FormatLocalTime(event.timestamp))
+    
+    -- Refresh UI if visible
+    if _G.ORGA_EventsScrollFrame and _G.ORGA_EventsScrollFrame:IsVisible() then
+        local parentFrame = _G.ORGA_EventsScrollFrame:GetParent()
+        if parentFrame then
+            Debug("Refreshing events list after add")
+            CreateEventsListView(parentFrame)
+        end
+    end
+end
+
+local function ProcessIncomingEventEdit(data, sender)
+    local event = DeserializeEvent(data)
+    
+    -- Validate event
+    if not event or not event.id then
+        Debug("Received invalid event data for edit from " .. sender)
+        return
+    end
+    
+    -- Look for existing event with this ID
+    local found = false
+    for i, existingEvent in ipairs(ORGA_Events_Data.events) do
+        if existingEvent.id == event.id then
+            -- Update the event
+            ORGA_Events_Data.events[i] = event
+            Debug("Updated event from " .. sender .. ": " .. event.title)
+            found = true
+            break
+        end
+    end
+    
+    if not found then
+        Debug("Could not find event to edit: " .. event.id)
+        return
+    end
+    
+    -- Sort events after editing
+    SortEvents()
+    
+    -- Show notification to user
+    print("|cFFFFFFFF[ORGA_Events]|r Event updated: " .. event.title)
+    
+    -- Refresh UI if visible
+    if _G.ORGA_EventsScrollFrame and _G.ORGA_EventsScrollFrame:IsVisible() then
+        local parentFrame = _G.ORGA_EventsScrollFrame:GetParent()
+        if parentFrame then
+            Debug("Refreshing events list after edit")
+            CreateEventsListView(parentFrame)
+        end
+    end
+end
+
+local function ProcessIncomingEventDelete(data, sender)
+    local event = DeserializeEvent(data)
+    
+    -- Validate event
+    if not event or not event.id then
+        Debug("Received invalid event data for delete from " .. sender)
+        return
+    end
+    
+    -- Look for existing event with this ID
+    local found = false
+    for i, existingEvent in ipairs(ORGA_Events_Data.events) do
+        if existingEvent.id == event.id then
+            -- Remove the event
+            table.remove(ORGA_Events_Data.events, i)
+            Debug("Deleted event from " .. sender .. ": " .. event.title)
+            found = true
+            break
+        end
+    end
+    
+    if not found then
+        Debug("Could not find event to delete: " .. event.id)
+        return
+    end
+    
+    -- Show notification to user
+    print("|cFFFFFFFF[ORGA_Events]|r Event deleted: " .. event.title)
+    
+    -- Refresh UI if visible
+    if _G.ORGA_EventsScrollFrame and _G.ORGA_EventsScrollFrame:IsVisible() then
+        local parentFrame = _G.ORGA_EventsScrollFrame:GetParent()
+        if parentFrame then
+            Debug("Refreshing events list after delete")
+            CreateEventsListView(parentFrame)
+        end
+    end
+end
+
 -- Create a function to attempt tab registration
 local function TryRegisterTab()
     -- Only register the tab if player is in the guild
@@ -1137,6 +1541,12 @@ local function TryRegisterTab()
         end)
         
         _G.ORGA_Events_Loaded = "Loaded"
+        
+        -- Initialize communication system
+        InitializeComm()
+        
+        -- Request events sync
+        C_Timer.After(5, RequestEventsSync)
         
         -- Print status message
         print("|cFFFFFFFF[ORGA_Events]|r Events module loaded successfully")

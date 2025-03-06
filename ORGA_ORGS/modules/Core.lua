@@ -58,7 +58,8 @@ local function OnPlayerLogin()
         ORGA_Data[playerName] = {
             inventory = {},
             gold = GetMoney(),
-            isORGSBankAlt = isBankAlt
+            isORGSBankAlt = isBankAlt,
+            lastSync = 0 -- Add last sync timestamp
         }
     end
     
@@ -93,6 +94,14 @@ local function OnPlayerLogin()
                 if ORGS_IsBankOpen() then
                     print("|cff00ff00[ORGA_ORGS]: Bank confirmed open on attempt " .. attempts .. ", scanning inventory...|r")
                     ORGS_SaveInventoryData()
+                    
+                    -- Broadcast inventory update to guild after save
+                    if ORGS_Comm and ORGS_Comm.SendInventoryData then
+                        C_Timer.After(2, function()
+                            ORGS_Comm.SendInventoryData("GUILD")
+                        end)
+                    end
+                    
                     return -- Success, no need for more attempts
                 elseif attempts < maxAttempts then
                     -- Try again after delay
@@ -106,6 +115,15 @@ local function OnPlayerLogin()
             C_Timer.After(0.5, checkBankAndScan)
         end)
     end
+    
+    -- Initialize communication module
+    C_Timer.After(2, function()
+        -- Request inventory sync from guild
+        if ORGS_Comm and ORGS_Comm.RequestInventorySync then
+            ORGS_Comm.RequestInventorySync()
+            print("|cff00ff00[ORGA_ORGS]: Requesting bank inventory data from guild members...|r")
+        end
+    end)
 end
 
 -- Register event handler
