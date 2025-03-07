@@ -1,7 +1,3 @@
-# package-as directive is the base name of the resulting package zip
-package-as: ORGA
-
-# ignore specifies which files/folders to exclude
 ignore:
   - README.md
   - CLAUDE.md
