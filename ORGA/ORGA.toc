@@ -1,13 +1,13 @@
 ## Interface: 11506
 ## Title: Only Rejects Guild Addon
 ## Author: Lyderian
-## Version: 1.0.1
+## Version: 1.0.14
 ## Notes: Guild Management and Organization for Only Rejects
 ## Dependencies:
-## SavedVariables: ORGA_Data, ORGA_WindowSettings
+## SavedVariables: ORGA_Data, ORGA_WindowSettings, ORGS_Settings, ORGS_Cart, ORGS_RequestedItems, ORGS_BankAlts, ORGA_Events_Data
 ## X-Category: Guild
 ## X-Website: https://github.com/Lyderian/ORGA
 ## X-Curse-Project-ID: 1213586
-## X-WoWI-ID: YOUR_WOWI_ID
+## OptionalDeps: Bagnon, Baggins
 
 ORGA.lua

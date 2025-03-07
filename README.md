@@ -4,7 +4,7 @@
 
 ORGA is a comprehensive guild management addon for World of Warcraft Classic designed specifically for the "OnlyRejects" guild. It provides guild members with tools for organization, guild bank management, event planning, and more.
 
-**Version:** 1.0.9
+**Version:** 1.0.14
 
 ## Features
 
@@ -148,6 +148,12 @@ This addon is designed specifically for the "OnlyRejects" guild and is licensed 
 Developed by Lyderian for the OnlyRejects guild.
 
 ## Changelog
+
+### Version 1.0.14
+- Fixed CurseForge packaging structure to ensure sub-addons are properly recognized by the game
+- Modified packaging configuration to place addons at the root level rather than nested
+- Ensured consistent versioning across all addon modules
+- Consolidated all SavedVariables references in the core addon
 
 ### Version 1.0.9
 - Updated interface version to support WoW Classic 1.15.6
