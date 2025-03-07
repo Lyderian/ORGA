@@ -1,12 +1,7 @@
+# package-as directive is the base name of the resulting package zip
 package-as: ORGA
 
-move-folders:
-  ORGA: ORGA
-  ORGA_Deathlog: ORGA_Deathlog
-  ORGA_Events: ORGA_Events
-  ORGA_ORGS: ORGA_ORGS
-  ORGA_REJECTS: ORGA_REJECTS
-
+# ignore specifies which files/folders to exclude
 ignore:
   - README.md
   - CLAUDE.md
