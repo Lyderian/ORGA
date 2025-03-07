@@ -1,6 +1,7 @@
 package-as: ORGA
 
 move-folders:
+  ORGA: ORGA
   ORGA_Deathlog: ORGA_Deathlog
   ORGA_Events: ORGA_Events
   ORGA_ORGS: ORGA_ORGS
