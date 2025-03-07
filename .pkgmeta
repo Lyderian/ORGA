@@ -2,6 +2,14 @@ package-as: ORGA
 
 enable-nolib-creation: no
 
+# Make sure all addon files are included in the package
+move-folders:
+  ORGA: ORGA
+  ORGA_Deathlog: ORGA_Deathlog
+  ORGA_Events: ORGA_Events
+  ORGA_ORGS: ORGA_ORGS
+  ORGA_REJECTS: ORGA_REJECTS
+
 ignore:
   - README.md
   - CLAUDE.md
